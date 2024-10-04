@@ -81,16 +81,18 @@ class ArtistTemplate(TemplateView):
 
 class ServeralArtists(APIView):
     def get(self, request):
+        query = self.request.query_params.get('query')
 
-        playlist = self.get_playlist()
+
+        playlist = self.get_playlist(query)
         return JsonResponse({
             "playlist": playlist
         })
 
-    def get_playlist(self):
+    def get_playlist(self, query):
         try:
             token = get_token()
-            url = f"https://api.spotify.com/v1/artists"
+            url = f"https://api.spotify.com/v1/artists?ids={query}"
             headers = {
                 "Authorization": "Bearer " + token
             }
@@ -99,3 +101,5 @@ class ServeralArtists(APIView):
             return json_result
         except Exception as e:
             return str(e)
+class ArtistListTemplate(TemplateView):
+    template_name = "artists.html"
