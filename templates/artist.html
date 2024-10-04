@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121212; /* Dark Spotify-like background */
+            color: #FFFFFF; /* White text for contrast */
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1DB954; /* Spotify green */
+        }
+        .container {
+            max-width: 800px;
+        }
+        .form-group input {
+            background-color: #333; /* Dark input field */
+            border: none;
+            color: #fff;
+            padding: 10px;
+            font-size: 1.2rem;
+        }
+        .btn-primary {
+            background-color: #1DB954;
+            border-color: #1DB954;
+        }
+        .btn-primary:hover {
+            background-color: #1ed760;
+            border-color: #1ed760;
+        }
+        .card {
+            background-color: #282828; /* Dark card background */
+            border: none;
+            margin-top: 20px;
+        }
+        .card-header {
+            background-color: #1DB954;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        .card-body p {
+            font-size: 1.2rem;
+        }
+        .artist-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 5px 0;
+            border-bottom: 1px solid #404040;
+        }
+        ul li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Playlist Information</h1>
+
+        <div class="form-group">
+            <input type="text" id="artistQuery" class="form-control" placeholder="Enter artist name">
+            <button id="fetchPlaylist" class="btn btn-primary mt-2">Get Playlist</button>
+        </div>
+
+        <div id="playlistInfo">
+            <!-- The playlist data will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fetchPlaylist').addEventListener('click', function() {
+            const query = document.getElementById('artistQuery').value;
+            fetch(`/playlist?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.playlist.error) {
+                        document.getElementById('playlistInfo').innerHTML = `<div class="alert alert-danger">${data.playlist.error}</div>`;
+                    } else {
+                        const artistImage = data.playlist.images.length > 0 ? data.playlist.images[0].url : '';
+                        const tracksList = data.playlist.tracks ? data.playlist.tracks.map(track => `<li>${track.name} (Popularity: ${track.popularity})</li>`).join('') : '';
+
+                        document.getElementById('playlistInfo').innerHTML = `
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>Artist: ${data.playlist.name}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <img src="${artistImage}" alt="${data.playlist.name}" class="artist-image">
+                                    <p><strong>Genres:</strong> ${data.playlist.genres.join(", ")}</p>
+                                    <p><strong>Popularity:</strong> ${data.playlist.popularity}</p>
+                                    <p><strong>Followers:</strong> ${data.playlist.followers.total}</p>
+                                    <h4>Top Tracks:</h4>
+                                    <ul>
+                                        ${tracksList}
+                                    </ul>
+                                    <a href="${data.playlist.external_urls.spotify}" target="_blank" class="btn btn-primary mt-2">Listen on Spotify</a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+        });
+    </script>
+
+</body>
+</html>
