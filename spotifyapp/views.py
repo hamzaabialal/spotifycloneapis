@@ -113,3 +113,31 @@ class ServeralArtists(APIView):
 
 class ArtistListTemplate(TemplateView):
     template_name = "artists.html"
+
+
+class SPotifyAlbums(APIView):
+    """
+    API View to handle Spotify album queries by artist ID.
+    """
+    def post(self, request):
+        query = request.data.get('query')
+        albums = self.get_albums(query)
+        return JsonResponse({"albums": albums})
+
+    def get_albums(self, query):
+        """
+        Retrieves Spotify albums based on artist query.
+        """
+        try:
+            token = get_token()
+            url = f"https://api.spotify.com/v1/artists/{query}/albums"
+            headers = {"Authorization": f"Bearer {token}"}
+
+            response = get(url, headers=headers)
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}
+
+
+class AlbumsTemplate(TemplateView):
+    template_name = "albums.html"

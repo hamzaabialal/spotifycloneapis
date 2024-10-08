@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Playlist</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #181818;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #1DB954;
+        }
+        .card {
+            background-color: #282828;
+            border: none;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .card-header {
+            background-color: transparent;
+            border-bottom: none;
+        }
+        .artist-image {
+            border-radius: 50%;
+            margin-bottom: 20px;
+            max-width: 150px;
+        }
+        .btn-primary {
+            background-color: #1DB954;
+            border-color: #1DB954;
+        }
+        .form-control {
+            background-color: #282828;
+            border: 1px solid #555;
+            color: #fff;
+        }
+        .form-control:focus {
+            background-color: #333;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #1ed760;
+            border-color: #1ed760;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Spotify Playlist</h1>
+
+        <div id="playlistInfo" class="row">
+            <!-- The playlist data will be dynamically injected here -->
+        </div>
+
+        <div class="form-group">
+            <input type="text" id="artistQuery" class="form-control" placeholder="Enter artist name">
+            <button id="fetchPlaylist" class="btn btn-primary mt-2">Get Artists</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fetchPlaylist').addEventListener('click', function() {
+            
+
+                    // Check if artists exist in the response
+                    if (data.playlist && data.playlist.artists && data.playlist.artists.length > 0) {
+                        data.playlist.artists.forEach(artist => {
+                            var artistImage = artist.images && artist.images[0] ? artist.images[0].url : 'https://via.placeholder.com/150';
+                            var artistCard = `
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header text-center">
+                                            <h3>${artist.name}</h3>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <img src="${artistImage}" alt="${artist.name}" class="artist-image img-fluid">
+                                            <p><strong>Genres:</strong> ${artist.genres.join(", ")}</p>
+                                            <p><strong>Popularity:</strong> ${artist.popularity}</p>
+                                            <p><strong>Followers:</strong> ${artist.followers.total.toLocaleString()}</p>
+                                            <a href="${artist.external_urls.spotify}" target="_blank" class="btn btn-primary mt-2">Listen on Spotify</a>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            playlistInfo.innerHTML += artistCard;
+                        });
+                    } else {
+                        playlistInfo.innerHTML = '<p class="text-center">No artists found. Please try another query.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching the data:', error);
+                    playlistInfo.innerHTML = '<p class="text-center text-danger">Failed to load data. Please try again later.</p>';
+                });
+        });
+    </script>
+
+</body>
+
+</html>
